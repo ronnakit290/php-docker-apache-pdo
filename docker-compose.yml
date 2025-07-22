@@ -18,12 +18,12 @@ services:
     container_name: mysql-db
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: testdb
-      MYSQL_USER: testuser
-      MYSQL_PASSWORD: testpass
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-testdb}
+      MYSQL_USER: ${MYSQL_USER:-mysql_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-mysql_password}
     ports:
-      - "3306:3306"
+      - "${MYSQL_PORT-3306}:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
@@ -36,8 +36,8 @@ services:
     environment:
       PMA_HOST: mysql
       PMA_PORT: 3306
-      PMA_USER: root
-      PMA_PASSWORD: rootpassword
+      PMA_USER: ${MYSQL_USER:-mysql_user}
+      PMA_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
     ports:
       - "8081:80"
     depends_on:
