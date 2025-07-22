@@ -1,25 +1,19 @@
 FROM php:8.2-apache
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install PDO extensions
-RUN docker-php-ext-install pdo pdo_mysql pdo_pgsql
-
-# Enable Apache mod_rewrite
+# เปิดใช้งาน Apache mod_rewrite
 RUN a2enmod rewrite
 
-# Set working directory
-WORKDIR /var/www/html
+# ติดตั้ง PDO และ PDO MySQL
+RUN docker-php-ext-install pdo pdo_mysql
 
-# Copy custom Apache configuration if needed
-COPY apache-config.conf /etc/apache2/sites-available/000-default.conf
+# กำหนด Document Root (ถ้าต้องการ)
+# ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 
-# Set proper permissions
-RUN chown -R www-data:www-data /var/www/html
-RUN chmod -R 755 /var/www/html
+# COPY vhost.conf /etc/apache2/sites-available/000-default.conf
+# (ตัวอย่างไว้สำหรับ config เพิ่มเติม)
 
-# Expose port 80
-EXPOSE 80
+# คัดลอก source code ไปใน container (เช่นกรณี Laravel/WordPress ฯลฯ)
+COPY . /var/www/html
+
+# ให้สิทธิ์กับไฟล์ (ถ้าจำเป็น)
+# RUN chown -R www-data:www-data /var/www/html

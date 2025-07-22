@@ -1,53 +1,42 @@
+version: '3.8'
+
 services:
-  php:
+  php-apache:
     build: .
     container_name: php-apache-pdo
     ports:
-      - "8080:80"
+      - "${APACHE_PORT}:80"
     volumes:
       - ./src:/var/www/html
-    environment:
-      - APACHE_DOCUMENT_ROOT=/var/www/html
     depends_on:
-      - mysql
-    networks:
-      - php-network
+      - mysql-db
 
-  mysql:
-    image: mysql:8.0
+  mysql-db:
+    image: mysql:8
     container_name: mysql-db
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-testdb}
-      MYSQL_USER: ${MYSQL_USER:-mysql_user}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-mysql_password}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
-      - "${MYSQL_PORT-3306}:3306"
+      - "3306:3306"
     volumes:
-      - mysql_data:/var/lib/mysql
-    networks:
-      - php-network
+      - dbdata:/var/lib/mysql
 
   phpmyadmin:
-    image: phpmyadmin/phpmyadmin:latest
+    image: phpmyadmin/phpmyadmin
     container_name: phpmyadmin
     restart: always
-    environment:
-      PMA_HOST: mysql
-      PMA_PORT: 3306
-      PMA_USER: ${MYSQL_USER:-mysql_user}
-      PMA_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
-    ports:
-      - "8081:80"
     depends_on:
-      - mysql
-    networks:
-      - php-network
+      - mysql-db
+    ports:
+      - "${PMA_PORT}:80"
+    environment:
+      PMA_HOST: mysql-db
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
 
 volumes:
-  mysql_data:
-
-networks:
-  php-network:
-    driver: bridge
+  dbdata:
