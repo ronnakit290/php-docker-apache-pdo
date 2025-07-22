@@ -415,3 +415,5 @@ CREATE INDEX idx_property_parent ON properties(parent_property_id);
 CREATE INDEX idx_healer_location ON healers(related_location_id);
 CREATE INDEX idx_herb_symptoms_method ON herb_symptoms(recommended_method_id);
 CREATE INDEX idx_formula_created_by ON herb_formulas(created_by_healer_id);
+
+--
